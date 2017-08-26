@@ -260,7 +260,7 @@ public class HttpTransport extends Transport {
 
         try {
             conn = this.targetUrl.openConnection();
-
+            conn.setRequestProperty("User-Agent", null);
             if (this.targetUrl.getProtocol().equals("https")) {
                 try {
                     PayloadTrustManager.useFor(conn, certHash);

